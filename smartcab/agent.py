@@ -2,18 +2,19 @@ import random
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
+import numpy as np
 
 class LearningAgent(Agent):
     """An agent that learns to drive in the smartcab world."""
 
     def __init__(self, env, learning_rate=0.2, discount_factor=0.2):
-        super(LearningAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
-        self.color = 'red'  # override color
+        super(LearningAgent, self).__init__(env)
+        self.color = 'red' 
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         # initialize Q value to 0 for each state/action pair
         # 8 x 4 list (4 possible actions per state, 8 possible states)
-        self.Q_values = [[0.0 for a in range(4)] for s in range(7)]
-        self.state_action = [[False for a in range(4)] for s in range(7)]
+        self.Q_values = np.zeros((7, 4))
+        self.state_action = np.zeros((7, 4), dtype=bool)
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.run = 0
@@ -87,57 +88,14 @@ class LearningAgent(Agent):
             else:
                 return 6
 
-# avg_success = 0.0
-# avg_neg_penality = 0.0
-# total_count = 0.0
 def run():
     """Run the agent for a finite number of trials."""
-    # Set up environment and agent
-    # global avg_success
-    # global avg_neg_penality
-    # global total_count
-    e = Environment()  # create environment (also adds some dummy traffic)
-    a = e.create_agent(LearningAgent)  # create agent
-    # a.learning_rate = i / 10
-    # a.discount_factor = j / 10
+    e = Environment() 
+    a = e.create_agent(LearningAgent)
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
-    # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
-
-    # Now simulate it
     sim = Simulator(e, update_delay=0.00, display=False)  # create simulator (uses pygame when display=True, if available)
-    # NOTE: To speed up simulation, reduce update_delay and/or set display=False
     sim.run(n_trials=100)  # run for a specified number of trials
     print a.Q_values
-    # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C on the command-line
 
 if __name__ == '__main__':
     run()
-    # global avg_success
-    # global avg_neg_penality
-    # n = 100
-    # performance = [[0.0 for j in range(10)] for i in range(10)]
-    # neg_penalty = [[0.0 for j in range(10)] for i in range(10)]
-    # for i in range(10):
-    #     for j in range(10):
-    #         for t in range(n):
-    #             run(float(i), float(j))
-    #         performance[i][j] = avg_success / n
-    #         neg_penalty[i][j] = avg_neg_penality / total_count * 100
-    #         avg_success = 0
-    #         avg_neg_penality = 0
-    # index = [[False for j in range(10)] for i in range(10)]
-    # top_10 = ["" for j in range(10)]
-    # for i in range(10):
-    #     max_value = performance[0][0]
-    #     max_L = 0
-    #     max_D = 0
-    #     for j in range(10):
-    #         for k in range(10):
-    #             if performance[j][k] > max_value and not index[j][k]:
-    #                 max_value = performance[j][k]
-    #                 max_L = j
-    #                 max_D = k
-    #     index[max_L][max_D] = True
-    #     top_10[i] = "L: {}, D: {}, P: {}, N: {}".format(max_L, max_D, performance[max_L][max_D], neg_penalty[max_L][max_D])
-    # for i in range(10):
-    #     print top_10[i]
