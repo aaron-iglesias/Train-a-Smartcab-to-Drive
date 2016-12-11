@@ -51,16 +51,16 @@ class LearningAgent(Agent):
     # actions with same Q-values have same chance via random number generator
     def calculate_action(self, next_action=False):
         if self.run <= 90 and not next_action:
-            for a in range(4):
+            for a in range(self.state_action.shape[1]):
                 if not self.state_action[self.state][a]:
                     self.state_action[self.state][a] = True
                     return a
-            for s in range(7):
-                for a in range(4):
+            for s in range(self.state_action.shape[0]):
+                for a in range(self.state_action.shape[1]):
                     if not self.state_action[s][a]:
-                        return random.randint(0, 3)
+                        return random.randint(0, self.state_action.shape[1] - 1)
         best_actions = [0]
-        for a in range(1, 4):
+        for a in range(1, self.Q_values.shape[1]):
             if self.Q_values[self.state][a] > self.Q_values[self.state][best_actions[0]]:
                 best_actions = [a]
             elif self.Q_values[self.state][a] == self.Q_values[self.state][best_actions[0]]:
@@ -94,7 +94,7 @@ def run():
     a = e.create_agent(LearningAgent)
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     sim = Simulator(e, update_delay=0.00, display=False)  # create simulator (uses pygame when display=True, if available)
-    sim.run(n_trials=100)  # run for a specified number of trials
+    sim.run(n_trials=1000)  # run for a specified number of trials
     print a.Q_values
 
 if __name__ == '__main__':
