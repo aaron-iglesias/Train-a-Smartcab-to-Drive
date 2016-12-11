@@ -94,7 +94,7 @@ def run():
     a = e.create_agent(LearningAgent)
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     sim = Simulator(e, update_delay=0.00, display=False)  # create simulator (uses pygame when display=True, if available)
-    sim.run(n_trials=1000)  # run for a specified number of trials
+    sim.run(n_trials=100)  # run for a specified number of trials
     print a.Q_values
 
 if __name__ == '__main__':
